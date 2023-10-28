@@ -48,5 +48,5 @@ class REST_actions():
             setattr(all_objects[cls.__name__ + '.' + state_id], key, value)
         all_objects[cls.__name__ + '.' + state_id].save()
         storage.reload()
-        return {'status code': 201, 'object dict':
+        return {'status code': 200, 'object dict':
                 all_objects[cls.__name__ + '.' + state_id].to_dict()}
