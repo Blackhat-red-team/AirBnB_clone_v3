@@ -34,6 +34,20 @@ class FileStorage:
             return new_dict
         return self.__objects
 
+    def get(self, cls, id: str):
+        """
+        Get Object By Id
+        :param cls:
+        :param id:
+        :return:
+        """
+        class_object = None
+        if (cls):
+            for key, value in self.__objects.items():
+                if isinstance(value, cls) and value.id == id:
+                    return value
+        return None
+
     def new(self, obj):
         """sets in __objects the obj with key <obj class name>.id"""
         if obj is not None:
