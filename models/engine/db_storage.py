@@ -2,6 +2,7 @@
 """
 Contains the class DBStorage
 """
+import urllib.parse
 
 import models
 from models.amenity import Amenity
@@ -28,18 +29,22 @@ class DBStorage:
     def __init__(self):
         """Instantiate a DBStorage object"""
         HBNB_MYSQL_USER = getenv('HBNB_MYSQL_USER')
-        HBNB_MYSQL_PWD = getenv('HBNB_MYSQL_PWD')
+        """For Handel Uri Errors"""
+        HBNB_MYSQL_PWD = urllib.parse.quote(getenv('HBNB_MYSQL_PWD'))
         HBNB_MYSQL_HOST = getenv('HBNB_MYSQL_HOST')
         HBNB_MYSQL_DB = getenv('HBNB_MYSQL_DB')
         HBNB_ENV = getenv('HBNB_ENV')
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      format(HBNB_MYSQL_USER,
-                                             HBNB_MYSQL_PWD,
-                                             HBNB_MYSQL_HOST,
-                                             HBNB_MYSQL_DB))
+        HBNB_PORT = getenv('HBNB_MYSQL_PORT', 3306)
+        IS_DEBUG = (getenv('HBNB_DEBUG', 'False')) != 'False'
+        self.__engine = create_engine(f'mysql+mysqldb://'
+                                      f'{HBNB_MYSQL_USER}:{HBNB_MYSQL_PWD}'
+                                      f'@{HBNB_MYSQL_HOST}:'
+                                      f'{HBNB_PORT}/{HBNB_MYSQL_DB}',
+                                      echo=IS_DEBUG)
+
         if HBNB_ENV == "test":
             Base.metadata.drop_all(self.__engine)
-    
+
     def get(self, cls, id: str):
         """
         Get Object By Id
@@ -47,15 +52,17 @@ class DBStorage:
         :param id:
         :return:
         """
-        print()
-        if not cls or not cls:   
+        if not cls or not cls:
             return None
         return self.__session.query(cls).filter_by(id=id).first()
 
     def count(self, cls=None):
-        pass
-    
-            
+        """count the number of objects in storage"""
+        if cls:
+            return self.__session.query(cls).count()
+        return sum(map(lambda c: self.__session.query(c).count(),
+                       classes.values()))
+
     def all(self, cls=None):
         """query on the current database session"""
         new_dict = {}
