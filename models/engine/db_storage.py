@@ -47,9 +47,10 @@ class DBStorage:
         :param id:
         :return:
         """
-        if not classes[cls] or not cls:
+        print()
+        if not cls or not cls:   
             return None
-        return self.__session.query(classes[cls]).filter_by(id=id).first()
+        return self.__session.query(cls).filter_by(id=id).first()
 
     def count(self, cls=None):
         pass
