@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-
+"""
+Contains the class DBStorage
+"""
 import urllib.parse
 
 import models
