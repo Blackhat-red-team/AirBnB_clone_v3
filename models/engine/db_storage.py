@@ -40,20 +40,7 @@ class DBStorage:
         if HBNB_ENV == "test":
             Base.metadata.drop_all(self.__engine)
     
-    def get(self, cls, id: str):
-        """
-        Get Object By Id
-        :param cls:
-        :param id:
-        :return:
-        """
-        if not classes[cls] or not cls:
-            return None
-        return self.__session.query(classes[cls]).filter_by(id=id).first()
 
-    def count(self, cls=None):
-        pass
-    
             
     def all(self, cls=None):
         """query on the current database session"""
