@@ -49,9 +49,9 @@ def put_state(state_id):
     """ updates a State object by its id """
     request_body = request.get_json()
     if not request_body:
-        abort(400, "Not a JSON")
+        return jsonify({'error': 'Not a JSON'}), 400
 
-    args_to_ignore = ['id', 'created_at', 'updated_at', '__class__']
+    args_to_ignore = ['id', 'created_at', 'updated_at']
     put_response = REST_actions.put(
         State, state_id, args_to_ignore, request_body)
     if put_response.get('status code') == 404:
