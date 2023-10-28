@@ -16,7 +16,6 @@ def get_all_city(state_id):
         abort(404)
     # craete a list of dictionaries
     cities = list(map(lambda city: city.to_dict(), state.cities))
-    print(cities)
     return jsonify(cities)
 
 
