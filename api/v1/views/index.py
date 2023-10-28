@@ -7,8 +7,7 @@ from api.v1.views import app_views
 @app_views.route('/status')
 def status():
     """returns a JSON says the status of the API is OK"""
-    status_dict = {"status": "OK"}
-    return jsonify(status_dict)
+    return jsonify({"status": "OK"})
 
 
 @app_views.route('/stats')
@@ -23,7 +22,8 @@ def stats():
     from models import storage
 
     classes = [('amenities', Amenity), ('cities', City),
-               ('places', Place,), ('reviews', Review,), ('states', State), ('users', User)]
+               ('places', Place,), ('reviews', Review,),
+               ('states', State), ('users', User)]
     stats_dict = {}
     for key, cls_object in classes:
         stats_dict[key] = storage.count(cls_object)
