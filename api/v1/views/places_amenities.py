@@ -1,72 +1,52 @@
 #!/usr/bin/python3
 """
-Flask route is returns json stat response
+Flask route that returns JSON status response
 """
 from flask import jsonify, abort, request
 from api.v1.views import app_views
 from models import storage
-from models.user import User
 from models.place import Place
-from models.city import City
-from models.review import Review
 from models.amenity import Amenity
-from api.v1.views.base_actions import REST_actions
-
 
 @app_views.route('/places/<place_id>/amenities', methods=['GET'])
-def amenities_der_pla(place_id=None):
+def get_amenities_perds_place(place_id=None):
     """
-        reviews route to handle http method for requ rev by place
+    Route to handle HTTP method for retrieving amenities by place
     """
-    place_obdj = storage.get('Place', place_id)
+    place_obj = storage.get(Place, place_id)
 
-    if request.method == 'GET':
-        if place_obdj is None:
-            abort(404, 'Not found')
-        all_amenities = storage.all('Amenity')
-        if STORAGE_T == 'db':
-            place_amenities = place_obdj.amenities
-        else:
-            place_amen_ids = place_obdj.amenities
-            place_amenities = []
-            for amen in place_amen_ids:
-                response.append(storage.get('Amenity', amen))
-        place_amenities = [
-            obdj.to_json() for obdj in place_amenities
-            ]
-        return jsonify(place_amenities)
-
-
-@app_views.route('/places/<place_id>/amenities/<amenity_id>',
-                 methods=['DELETE', 'POST'])
-def amenity_todo_plac(place_id=None, amenity_id=None):
-    """
-        reviews route to handle http meth for giv revi ID
-    """
-    place_obdj = storage.get('Place', place_id)
-    amenity_obdj = storage.get('Amenity', amenity_id)
-    if place_obdj is None:
+    if place_obj is None:
         abort(404, 'Not found')
-    if amenity_obdj is None:
+
+    place_amenities = place_obj.amenities
+
+    amenities_json = [amenity.to_dict() for amenity in place_amenities]
+
+    return jsonify(amenities_json)
+
+@app_views.route('/places/<place_id>/amenities/<amenity_id>', methods=['DELETE', 'POST'])
+def amenity_tis_place(place_id=None, amenity_id=None):
+    """
+    Route to handle HTTP methods for a given amenity by ID
+    """
+    place_obj = storage.get(Place, place_id)
+    amenity_obj = storage.get(Amenity, amenity_id)
+
+    if place_obj is None or amenity_obj is None:
         abort(404, 'Not found')
 
     if request.method == 'DELETE':
-        if (amenity_obdj not in place_obdj.amenities and
-                amenity_obdj.id not in place_obdj.amenities):
+        if amenity_obj not in place_obj.amenities:
             abort(404, 'Not found')
-        if STORAGE_T == 'db':
-            place_obdj.amenities.remove(amenity_obdj)
-        else:
-            place_obdj.amenity_ids.pop(amenity_obdj.id, None)
-        place_obdj.save()
+
+        place_obj.amenities.remove(amenity_obj)
+        place_obj.save()
         return jsonify({}), 200
 
     if request.method == 'POST':
-        if (amenity_obdj in place_obdj.amenities or
-                amenity_obdj.id in place_obdj.amenities):
-            return jsonify(amenity_obdj.to_json()), 200
-        if STORAGE_T == 'db':
-            place_obdj.amenities.append(amenity_obdj)
-        else:
-            place_obdj.amenities = amenity_obdj
-        return jsonify(amenity_obdj.to_json()), 201
+        if amenity_obj in place_obj.amenities:
+            return jsonify(amenity_obj.to_dict()), 200
+
+        place_obj.amenities.append(amenity_obj)
+        place_obj.save()
+        return jsonify(amenity_obj.to_dict()), 201
