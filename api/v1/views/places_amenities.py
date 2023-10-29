@@ -24,8 +24,10 @@ def get_amenities_perds_place(place_id=None):
 
     return jsonify(amenities_json)
 
-@app_views.route('/places/<place_id>/amenities/<amenity_id>', methods=['DELETE', 'POST'])
-def amenity_tis_place(place_id=None, amenity_id=None):
+@app_views.route('/places/<place_id>/amenities/<amenity_id>',
+                 methods=['DELETE', 'POST'])
+def amenity_tis_place(place_id=None,
+                      amenity_id=None):
     """
     Route to handle HTTP methods for a given amenity by ID
     """
