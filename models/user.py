@@ -32,5 +32,3 @@ class User(BaseModel, Base):
             if kwargs.get("password", None):
                 self.password = hashlib.md5(
                     kwargs["password"].encode()).hexdigest()
-        else:
-            self.password = hashlib.md5(self.password.encode()).hexdigest()
