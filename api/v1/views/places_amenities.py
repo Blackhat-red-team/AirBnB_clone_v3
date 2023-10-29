@@ -32,7 +32,7 @@ def amenities_der_pla(place_id=None):
             for amen in place_amen_ids:
                 response.append(storage.get('Amenity', amen))
         place_amenities = [
-            obj.to_json() for obj in place_amenities
+            obdj.to_json() for obdj in place_amenities
             ]
         return jsonify(place_amenities)
 
@@ -44,29 +44,29 @@ def amenity_todo_plac(place_id=None, amenity_id=None):
         reviews route to handle http meth for giv revi ID
     """
     placed_obdj = storage.get('Place', place_id)
-    amenity_obj = storage.get('Amenity', amenity_id)
+    amenity_obdj = storage.get('Amenity', amenity_id)
     if placed_obdj is None:
         abort(404, 'Not found')
-    if amenity_obj is None:
+    if amenity_obdj is None:
         abort(404, 'Not found')
 
     if request.method == 'DELETE':
-        if (amenity_obj not in placed_obdj.amenities and
-                amenity_obj.id not in placed_obdj.amenities):
+        if (amenity_obdj not in placed_obdj.amenities and
+                amenity_obdj.id not in placed_obdj.amenities):
             abort(404, 'Not found')
         if STORAGE_T == 'db':
-            placed_obdj.amenities.remove(amenity_obj)
+            placed_obdj.amenities.remove(amenity_obdj)
         else:
-            placed_obdj.amenity_ids.pop(amenity_obj.id, None)
+            placed_obdj.amenity_ids.pop(amenity_obdj.id, None)
         placed_obdj.save()
         return jsonify({}), 200
 
     if request.method == 'POST':
-        if (amenity_obj in placed_obdj.amenities or
-                amenity_obj.id in placed_obdj.amenities):
-            return jsonify(amenity_obj.to_json()), 200
+        if (amenity_obdj in placed_obdj.amenities or
+                amenity_obdj.id in placed_obdj.amenities):
+            return jsonify(amenity_obdj.to_json()), 200
         if STORAGE_T == 'db':
-            placed_obdj.amenities.append(amenity_obj)
+            placed_obdj.amenities.append(amenity_obdj)
         else:
-            placed_obdj.amenities = amenity_obj
-        return jsonify(amenity_obj.to_json()), 201
+            placed_obdj.amenities = amenity_obdj
+        return jsonify(amenity_obdj.to_json()), 201
