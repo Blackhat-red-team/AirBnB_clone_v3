@@ -6,6 +6,7 @@ from models import storage
 from models.user import User
 from models.place import Place
 from models.city import City
+from models.state import State
 from api.v1.views.base_actions import REST_actions
 
 
@@ -72,3 +73,37 @@ def put_place(place_id):
     if put_response.get('status code') == 404:
         abort(404)
     return put_response.get('object dict'), put_response.get('status code')
+
+
+@app_views.route('/places_search', methods=['POST'])
+def places_search():
+    """creates a Place"""
+
+    try:
+        request_body = request.get_json()
+    except Exception as e:
+        return jsonify({'error': 'Not a JSON'}), 400
+
+    all_places = storage.all(Place)
+    # {"city_id":place}
+    # convert list to dict
+    all_places_dict = {v.city_id: v for k, v in all_places.items()}
+
+    if request_body == {}:
+        places = list(map(lambda x: x.to_dict(), all_places.values()))
+        return jsonify(places)
+    cities_list = []
+    states_ids = request_body.get('states')
+    if states_ids:
+        for state_id in states_ids:
+            state = storage.get(State, state_id)
+            cities_list.extend(list(map(lambda s: s.id, state.cities)))
+    cities_ids = request_body.get('cities', [])
+    cities_list.extend(cities_ids)
+    cities_list = list(set(cities_list))
+
+    filtered_places = []
+    for x in cities_list:
+        place = all_places_dict.get(x, None)
+        if place:
+            filtered_places.append(all_places_dict[x])
